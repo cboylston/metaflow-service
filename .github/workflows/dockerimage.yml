@@ -1,4 +1,4 @@
-name: Docker Image CI (Manual Build Only)
+name: Docker Build Only
 
 on:
   workflow_dispatch:
@@ -7,38 +7,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175
-        with:
-          images: |
-            netflixoss/metaflow_metadata_service
-          tags: |
-            type=semver,pattern={{raw}}
-            type=sha
-            type=raw,value=latest
-
-      # Optionally, you can remove the Docker Hub login step since we are not pushing.
-      #- name: Login to Docker Hub
-      #  uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
-      #  with:
-      #    username: ${{ secrets.DOCKER_USERNAME_NETFLIX_OSS }}
-      #    password: ${{ secrets.DOCKER_AUTH_TOKEN_NETFLIX_OSS }}
-
-      - name: Build (No Push)
-        uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825
-        with:
-          context: .
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-
-
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build Docker image
+        run: docker build . -t test-image:latest
